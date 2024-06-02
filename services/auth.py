@@ -52,8 +52,8 @@ class AuthService(BaseService):
             return access_token
         raise HTTPException(detail='invalid username or password', status_code=401)
 
-    def logout(self, sub):
-        user = self._find_by_sub(sub)
+    def logout(self, user: models.Users):
+
         user.access_jti = ''
         self.db.commit()
         return True
