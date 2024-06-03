@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
+from sqlalchemy import text
 
 import models
 from dependencies import Account
@@ -19,7 +20,7 @@ class ExpenseService(BaseService):
         return self.db.query(models.Expenses).filter(
             models.Expenses.expense_classifications_id == classification_id).all()
 
-    def create_expense(self, classification_id, account: Account,  req: CreateExpenseReq) -> models.Expenses:
+    def create_expense(self, classification_id, account: Account, req: CreateExpenseReq) -> models.Expenses:
         c = models.Expenses(**req.model_dump())
         c.expense_classifications_id = classification_id
         if account is None:
@@ -34,6 +35,16 @@ class ExpenseService(BaseService):
 
     def get_expense(self, _id) -> models.Expenses:
         return self._get_by_id(_id)
+
+    def get_expenses_by_year_month_type(self, year: int, month: int):
+        expenses = self.db.execute(text('SELECT SUM(amount) AS amount, ec.expense_type FROM expenses AS e '
+                                        'INNER JOIN expense_classifications AS ec ON e.expense_classifications_id = ec.id '
+                                        'WHERE MONTH(e.transaction_dt) = :month AND YEAR(e.transaction_dt) = :year GROUP BY ec.expense_type ORDER BY ec.expense_type ASC;'), {'month': month, 'year': year})
+
+        data = expenses.mappings().all()
+        if data is None or data == []:
+            data = [{'acmount': 0, 'expense_type': 'income'}, {'acmount': 0, 'expense_type': 'withdrawal'}]
+        return data
 
     def _get_by_id(self, _id):
         c = self.db.query(models.Expenses).filter_by(id=_id).first()
