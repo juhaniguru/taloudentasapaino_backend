@@ -22,6 +22,9 @@ class ClassificationService(BaseService):
 
         return c
 
+    def get_classification(self, _id):
+        return self._get_by_id(_id)
+
     def _get_by_id(self, _id):
         c = self.db.query(models.ExpenseClassifications).filter_by(id=_id).first()
         if c is None:
@@ -43,7 +46,6 @@ class ClassificationService(BaseService):
         self.db.commit()
 
         return True
-
 
 
 def get_classification_service(db: Db):
