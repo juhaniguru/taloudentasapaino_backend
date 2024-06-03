@@ -27,3 +27,18 @@ async def create_classification(req: CreateClassificationReq, service: Classific
     c = service.create_classification(req)
 
     return c
+
+
+@router.put('/{classification_id}')
+async def edit_classification(classification_id: int, req: CreateClassificationReq,
+                              service: Classification) -> ClassificationRes:
+    c = service.edit_classification(classification_id, req)
+
+    return c
+
+
+@router.delete('/{classification_id}')
+async def delete_classification(classification_id: int,
+                                service: Classification):
+    service.delete_classification(classification_id)
+    return ""
