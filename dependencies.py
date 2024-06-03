@@ -1,5 +1,5 @@
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 
 import jwt
 from fastapi import Header, HTTPException, Depends
@@ -8,8 +8,9 @@ import models
 from services.auth import Auth
 
 
-def optional_login(service: Auth, authorization=Header(alias='api_key')):
-    if authorization is None:
+def optional_login(service: Auth, authorization=Header(None, alias='api_key')):
+
+    if authorization is None or authorization == "":
         return None
 
     header_parts = authorization.split(' ')
@@ -18,7 +19,7 @@ def optional_login(service: Auth, authorization=Header(alias='api_key')):
 
     if header_parts[0] != 'Bearer':
         raise HTTPException(detail='Unauthorized', status_code=401)
-    decoded = jwt.decode(authorization[1], os.getenv('SECRET'), algorithms=['HS256'])
+    decoded = jwt.decode(header_parts[1], os.getenv('SECRET'), algorithms=['HS256'])
     user = service.get_account(sub=decoded['sub'])
     if user is None:
         raise HTTPException(detail='Unauthorized', status_code=401)
@@ -26,18 +27,18 @@ def optional_login(service: Auth, authorization=Header(alias='api_key')):
 
 
 def require_logged_in_user(service: Auth, authorization=Header(alias='api_key')):
-    print("####################### auth", authorization)
+
     if authorization is None:
         raise HTTPException(detail='Unauthorized', status_code=401)
 
     header_parts = authorization.split(' ')
-    print("#########header", header_parts)
+
     if len(header_parts) != 2:
         raise HTTPException(detail='Unauthorized', status_code=401)
 
     if header_parts[0] != 'Bearer':
         raise HTTPException(detail='Unauthorized', status_code=401)
-    print("############### auth1", authorization[1])
+
     decoded = jwt.decode(header_parts[1], os.getenv('SECRET'), algorithms=['HS256'])
     user = service.get_account(sub=decoded['sub'])
     if user is None:
@@ -46,4 +47,4 @@ def require_logged_in_user(service: Auth, authorization=Header(alias='api_key'))
 
 
 Account = Annotated[models.Users, Depends(require_logged_in_user)]
-OptionalAccount = Annotated[models.Users, Depends(optional_login)]
+OptionalAccount = Annotated[Optional[models.Users], Depends(optional_login)]

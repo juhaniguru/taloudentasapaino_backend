@@ -1,7 +1,11 @@
 from typing import List
 from fastapi import APIRouter
-from dtos.classifications import CreateClassificationReq, ClassificationRes
+
+from dependencies import OptionalAccount
+from dtos.classifications import CreateClassificationReq, ClassificationRes, ClassificationsRes
+from dtos.expenses import ExpenseRes, CreateExpenseReq
 from services.classification import Classification
+from services.expense import Expense
 
 router = APIRouter(
     prefix='/api/v1/classifications',
@@ -40,6 +44,20 @@ async def delete_classification(classification_id: int,
 
 @router.get('/{classification_id}')
 async def get_classification(classification_id: int,
-                                service: Classification) -> ClassificationRes:
+                             service: Classification) -> ClassificationRes:
     c = service.get_classification(classification_id)
+    return c
+
+
+@router.get('/{classification_id}/expenses')
+async def get_expenses_by_classification(classification_id: int,
+                                         service: Expense) -> dict[str, List[ExpenseRes]]:
+    expenses = service.get_all_expenses_by_classification(classification_id)
+    return {'expenses': expenses}
+
+
+@router.post('/{classification_id}/expenses')
+async def create_expense(classification_id: int, account: OptionalAccount, req: CreateExpenseReq,
+                      service: Expense) -> ExpenseRes:
+    c = service.create_expense(classification_id, account, req)
     return c
