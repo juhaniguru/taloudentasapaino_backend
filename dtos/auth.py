@@ -13,3 +13,8 @@ class LoginRes(BaseModel):
 class RegisterRes(BaseModel):
     id: int
     username: str
+
+
+class GetAccountRes(BaseModel):
+    id: int
+    username: str

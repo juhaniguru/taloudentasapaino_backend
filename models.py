@@ -19,10 +19,12 @@ class ExpenseClassifications(Base):
     __tablename__ = 'expense_classifications'
     __table_args__ = (
         Index('name_UNIQUE', 'name', unique=True),
+
     )
 
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(45), nullable=False)
+    expense_type = mapped_column(String(45), nullable=False)
 
     expenses: Mapped[List['Expenses']] = relationship('Expenses', uselist=True, back_populates='expense_classifications')
 

@@ -26,16 +26,19 @@ def optional_login(service: Auth, authorization=Header(alias='api_key')):
 
 
 def require_logged_in_user(service: Auth, authorization=Header(alias='api_key')):
+    print("####################### auth", authorization)
     if authorization is None:
         raise HTTPException(detail='Unauthorized', status_code=401)
 
     header_parts = authorization.split(' ')
+    print("#########header", header_parts)
     if len(header_parts) != 2:
         raise HTTPException(detail='Unauthorized', status_code=401)
 
     if header_parts[0] != 'Bearer':
         raise HTTPException(detail='Unauthorized', status_code=401)
-    decoded = jwt.decode(authorization[1], os.getenv('SECRET'), algorithms=['HS256'])
+    print("############### auth1", authorization[1])
+    decoded = jwt.decode(header_parts[1], os.getenv('SECRET'), algorithms=['HS256'])
     user = service.get_account(sub=decoded['sub'])
     if user is None:
         raise HTTPException(detail='Unauthorized', status_code=401)

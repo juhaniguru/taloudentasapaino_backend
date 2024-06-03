@@ -9,7 +9,7 @@ from passlib.hash import pbkdf2_sha512 as pl
 import uuid
 
 import models
-from dtos.auht import LoginReq
+from dtos.auth import LoginReq
 from models import Db
 from services.base import BaseService
 
@@ -37,7 +37,7 @@ class AuthService(BaseService):
         return user
 
     def _find_by_sub(self, sub):
-        user = self.db.query(models.Users).filter_by(models.Users.access_jti == sub).first()
+        user = self.db.query(models.Users).filter(models.Users.access_jti == sub).first()
         if user is None:
             raise HTTPException(detail='user not found', status_code=404)
         return user

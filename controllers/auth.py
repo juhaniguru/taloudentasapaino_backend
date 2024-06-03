@@ -1,13 +1,18 @@
 from fastapi import APIRouter
 
 from dependencies import Account
-from dtos.auht import LoginReq, LoginRes, RegisterRes
+from dtos.auth import LoginReq, LoginRes, RegisterRes, GetAccountRes
 from services.auth import Auth
 
 router = APIRouter(
     prefix='/api/v1/auth',
     tags=['auth']
 )
+
+@router.get('/account')
+async def get_account(account: Account) -> GetAccountRes:
+    return account
+
 
 
 @router.post('/login')
