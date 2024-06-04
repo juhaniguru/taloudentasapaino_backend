@@ -15,9 +15,16 @@ async def get_expense(service: Expense, expense_id: int = Path(gt=0)) -> Expense
     return expense
 
 
+@router.get('/grouped/{year}/{month}')
+async def get_grouped_expenses_by_year_and_month(service: Expense, year: int, month: int = Path(gt=0, lt=13)):
+    expenses = service.get_grouped_expenses_by_year_month_type(year, month)
+
+    return expenses
+
+
 @router.get('/{year}/{month}')
-async def get_expenses_by_year_and_month(service: Expense, year: int, month: int = Path(gt=0, lt=13)):
-    expenses = service.get_expenses_by_year_month_type(year, month)
+async def get_expenses_by_year_month(service: Expense, year: int, month: int = Path(gt=0, lt=13)):
+    expenses = service.get_expenses_by_year_month(year, month)
 
     return expenses
 
