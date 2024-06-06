@@ -11,6 +11,7 @@ class CreateExpenseReq(BaseModel):
 
 
 class ExpenseRes(BaseModel):
+    id: int
     amount: int
     transaction_dt: datetime.datetime
     users: Optional[GetAccountRes]

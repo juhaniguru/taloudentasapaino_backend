@@ -37,7 +37,7 @@ class ExpenseService(BaseService):
         return self._get_by_id(_id)
 
     def get_expenses_by_year_month(self, year: int, month: int) -> List[models.Expenses]:
-        expenses = self.db.execute(text('SELECT amount AS amount, ec.expense_type, e.transaction_dt FROM expenses AS e '
+        expenses = self.db.execute(text('SELECT e.id, amount AS amount, ec.expense_type, e.transaction_dt, ec.name FROM expenses AS e '
                                         'INNER JOIN expense_classifications AS ec ON e.expense_classifications_id = ec.id '
                                         'WHERE MONTH(e.transaction_dt) = :month AND YEAR(e.transaction_dt) = :year ORDER BY e.transaction_dt ASC;'),
                                    {'month': month, 'year': year})
@@ -50,8 +50,7 @@ class ExpenseService(BaseService):
                                         'WHERE MONTH(e.transaction_dt) = :month AND YEAR(e.transaction_dt) = :year GROUP BY ec.expense_type ORDER BY ec.expense_type ASC;'), {'month': month, 'year': year})
 
         data = expenses.mappings().all()
-        if data is None or data == []:
-            data = [{'acmount': 0, 'expense_type': 'income'}, {'acmount': 0, 'expense_type': 'withdrawal'}]
+
         return data
 
     def _get_by_id(self, _id):
