@@ -8,7 +8,7 @@ import models
 from services.auth import Auth
 
 
-def optional_login(service: Auth, authorization=Header(None, alias='api_key')):
+def optional_login(service: Auth, authorization: object = Header(None, alias='api_key')) -> object:
 
     if authorization is None or authorization == "":
         return None
@@ -27,7 +27,7 @@ def optional_login(service: Auth, authorization=Header(None, alias='api_key')):
 
 
 def require_logged_in_user(service: Auth, authorization=Header(alias='api_key')):
-
+    
     if authorization is None:
         raise HTTPException(detail='Unauthorized', status_code=401)
 

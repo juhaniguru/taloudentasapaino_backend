@@ -15,6 +15,9 @@ router = APIRouter(
 
 @router.get('/')
 async def get_classifications(service: Classification) -> dict[str, List[ClassificationRes]]:
+
+    """ Kululuokituksien listaaminen """
+
     classifications = service.get_all_classifications()
 
     return {'classifications': classifications}
@@ -22,6 +25,9 @@ async def get_classifications(service: Classification) -> dict[str, List[Classif
 
 @router.post('/', dependencies=[Depends(require_logged_in_user)])
 async def create_classification(req: CreateClassificationReq, service: Classification) -> ClassificationRes:
+
+    """ Uuden kululuokituksen lisääminen """
+
     c = service.create_classification(req)
 
     return c
@@ -30,6 +36,9 @@ async def create_classification(req: CreateClassificationReq, service: Classific
 @router.put('/{classification_id}', dependencies=[Depends(require_logged_in_user)])
 async def edit_classification(classification_id: int, req: CreateClassificationReq,
                               service: Classification) -> ClassificationRes:
+
+    """ Oo. kululuokituksen nimen ja tyypin muuttaminen """
+
     c = service.edit_classification(classification_id, req)
 
     return c
@@ -38,6 +47,9 @@ async def edit_classification(classification_id: int, req: CreateClassificationR
 @router.delete('/{classification_id}', dependencies=[Depends(require_logged_in_user)])
 async def delete_classification(classification_id: int,
                                 service: Classification):
+
+    """ Kululuokituksen poistaminen"""
+
     service.delete_classification(classification_id)
     return ""
 
@@ -45,6 +57,9 @@ async def delete_classification(classification_id: int,
 @router.get('/{classification_id}', dependencies=[Depends(require_logged_in_user)])
 async def get_classification(classification_id: int,
                              service: Classification) -> ClassificationRes:
+
+    """ Yksittäisen kululuokituksen haku"""
+
     c = service.get_classification(classification_id)
     return c
 
@@ -52,6 +67,9 @@ async def get_classification(classification_id: int,
 @router.get('/{classification_id}/expenses', dependencies=[Depends(require_logged_in_user)])
 async def get_expenses_by_classification(classification_id: int,
                                          service: Expense) -> dict[str, List[ExpenseRes]]:
+
+    """ Kulujen listaaminen luokittain"""
+
     expenses = service.get_all_expenses_by_classification(classification_id)
     return {'expenses': expenses}
 
@@ -59,5 +77,7 @@ async def get_expenses_by_classification(classification_id: int,
 @router.post('/{classification_id}/expenses')
 async def create_expense(classification_id: int, account: OptionalAccount, req: CreateExpenseReq,
                       service: Expense) -> ExpenseRes:
+    """ Uuden kululuokituksen lisääminen"""
+
     c = service.create_expense(classification_id, account, req)
     return c
